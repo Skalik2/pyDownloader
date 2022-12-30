@@ -2,19 +2,24 @@ import tkinter
 import tkinter.filedialog
 from pytube import YouTube
 
-def Download(link,sciezka):
+def Download(link,path):
+  global output
   youtubeObject = YouTube(link)
   youtubeObject = youtubeObject.streams.get_highest_resolution()
   try:
-    youtubeObject.download(sciezka)
+    youtubeObject.download(path)
   except:
+    labelError = tkinter.Label(root, text="Error", bg="#1C2333", fg="white")
+    labelError.pack()
     print("Error")
-  print("Pobrano film Yay")
+  labelSuccess = tkinter.Label(root, text="Successfully downloaded!", bg="#1C2333", fg="white")
+  labelSuccess.pack()
+  print("Successfully downloaded!")
 
 def choose_file():
   global filepath
   filepath = tkinter.filedialog.askdirectory()
-  print(f"Wybrano katalog: {filepath}")
+  print(f"Selected directory: {filepath}")
 
 def get_value():
   global link
@@ -22,30 +27,32 @@ def get_value():
   Download(link,filepath)
 
 root = tkinter.Tk()
-root.wm_title("PyDownloader") #tytuł okna programu
-#root.geometry("750x250")
-root.config(bg="#1C2333") #0E1525
+root.geometry('600x200')
+root.wm_title("PyDownloader")
+root.config(bg="#1C2333")
 
 
-label = tkinter.Label(root, text="Witaj w programie służącym do pobierania filmów z YouTube", font=("Arial", 16), bg="#1C2333", fg="white")
+label = tkinter.Label(root, text="pyDownloader", font=("Arial", 20), bg="#1C2333", fg="white", pady=20)
 label.pack()
 
-string = tkinter.StringVar()
-string.set("Podaj folder, do którego zapiszesz pobrany film:")
-
-label = tkinter.Label(root, textvariable=string, bg="#1C2333", fg="white")
+label = tkinter.Label(root, text="Paste YouTube video url:", bg="#1C2333", fg="white")
 label.pack()
 
-button = tkinter.Button(root, text="Wybierz folder", command=choose_file, bg="#1C2333", fg="white")
-button.pack()
+buttonFrame = tkinter.Frame(root)
+buttonFrame.rowconfigure(0,weight=2)
+buttonFrame.rowconfigure(1,weight=1)
+buttonFrame.columnconfigure(0,weight=1)
+buttonFrame.columnconfigure(1,weight=1)
 
-label = tkinter.Label(root, text="Podaj link do filmu na YouTube:", bg="#1C2333", fg="white")
-label.pack()
+input_field = tkinter.Entry(buttonFrame, width="80")
+input_field.grid(row=0,columnspan=2,sticky=tkinter.W+tkinter.E)
 
-input_field = tkinter.Entry(root, text="Domyślny tekst", width="80")
-input_field.pack()
+btn0 = tkinter.Button(buttonFrame, text="Choose save path", command=choose_file, bg="#3e3e3e", fg="white")
+btn0.grid(row=1,column=0,sticky=tkinter.W+tkinter.E)
 
-button1 = tkinter.Button(root, text="Pobierz film!", background='#ff0000', command=get_value) #przycisk kopńcowy
-button1.pack()
+btn1 = tkinter.Button(buttonFrame, text="Download!", background='#ff0000', command=get_value)
+btn1.grid(row=1,column=1,sticky=tkinter.W+tkinter.E)
+
+buttonFrame.pack()
 
 root.mainloop()
